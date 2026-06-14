@@ -1,0 +1,165 @@
+#==============================================================================
+#CANONICAL .gitignore — single source of truth for every Terraform-created repo
+#------------------------------------------------------------------------------
+#This one comprehensive list is baked into every repo by the create_repo module
+#(github_repository_file.canonical_gitignore in new-1.0.1/git_ignore.tf).
+#Goal: no repo ever commits secrets, terraform state, agent/AI context files, or
+#operator-only analysis output again.
+#
+#Per-repo additions are allowed: append repo-specific lines BELOW this block, or
+#negate a line with a leading "!" (e.g. a repo that intentionally pins providers
+#may add "!.terraform.lock.hcl"). Do NOT delete entries from the shared block.
+#==============================================================================
+
+#------------------------------------------------------------------------------
+#Secrets / credentials / crypto material  (NEVER commit any of these)
+#------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+.env.example
+.env.sample
+*.tfvars
+*.tfvars.json
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+id_ecdsa*
+*.kdbx
+credentials
+.netrc
+.aws/
+.aws-credentials
+#Vault tokens and any secret-store material
+*vault-token*
+.vault-token
+secrets/
+secret/
+crypts/
+crypt/
+*.secret
+*.secrets
+
+#------------------------------------------------------------------------------
+#Terraform state / plans / local cache  (state can contain secrets in plaintext)
+#------------------------------------------------------------------------------
+.terraform/
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.*
+crash.log
+crash.*.log
+*.auto.tfvars
+*.auto.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+#Provider lock — ignored by default; a repo that wants to pin providers should
+#negate it in its per-repo section below with:  !.terraform.lock.hcl
+.terraform.lock.hcl
+
+#------------------------------------------------------------------------------
+#Agent / AI / assistant context files  (operator-only — never ship to a repo)
+#------------------------------------------------------------------------------
+.claude/
+CLAUDE.md
+**/CLAUDE.md
+AGENTS.md
+**/AGENTS.md
+GEMINI.md
+.cursor/
+.cursorrules
+.aider*
+.kiro/
+.windsurfrules
+.github/copilot-instructions.md
+#MCP server configs
+.mcp.json
+*.mcp.json
+mcp.json
+#Agent definition JSONs (operator-only). Uncomment if this repo would otherwise
+#commit agent configs that must stay private:
+#agents/**/*.json
+
+#------------------------------------------------------------------------------
+#Operator output / analysis / scratch  (default home for agent-generated text)
+#------------------------------------------------------------------------------
+#docs/ is the gitignored output folder — ALL agent outputs / repo analysis go
+#here and are NEVER committed. See docs/README.txt (dropped in by sterilize-repo).
+docs/
+#Root-level analysis reports
+/*-report.md
+/*-REPORT.md
+/*-analysis.md
+scratch/
+notes/
+.notes/
+tmp/
+.tmp/
+
+#------------------------------------------------------------------------------
+#Operator-only helper scripts the owner flagged  (per-repo negation allowed)
+#------------------------------------------------------------------------------
+#These are local convenience/validation/transcription helpers, not repo purpose.
+#A repo where such a script IS the deliverable should negate it below, e.g.
+#  !validate-schema.sh
+validate*.sh
+transcribe*.sh
+
+#------------------------------------------------------------------------------
+#Build artifacts / dependencies / language caches
+#------------------------------------------------------------------------------
+/build
+/dist
+build/
+dist/
+out/
+target/
+bin/
+obj/
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+coverage/
+.coverage
+*.egg-info/
+vendor/
+
+#------------------------------------------------------------------------------
+#Logs / editor / OS noise
+#------------------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+#------------------------------------------------------------------------------
+#Markdown  (READMEs / architecture docs are exactly what leaked — none committed)
+#------------------------------------------------------------------------------
+#all markdown uncommitted — negate per-repo with !README.md if truly needed
+*.md
